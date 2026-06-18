@@ -1,0 +1,11 @@
+# 示例配置文件。当前 CLI 还不自动读取配置，可按需复制这些值到命令参数。
+
+date = "2026-06-18"
+workspace = "/path/to/workspace"
+hours = 8
+timezone = "Asia/Shanghai"
+codex_home = "~/.codex"
+output = "daily/2026-06-18.md"
+
+# token_command 的输出里包含 total_tokens: 123,456 即可被解析。
+token_command = "python3 scripts/token_report.py --day 2026-06-18"

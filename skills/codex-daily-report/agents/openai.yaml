@@ -1,0 +1,7 @@
+interface:
+  display_name: "Codex 日报生成"
+  short_description: "从本机 Codex 会话和 Git 活动生成中文日报素材"
+  default_prompt: "使用 $codex-daily-report 生成当前工作区的中文日报素材。未指定日期时默认当前本地日期，总工时默认 8h。请先扫描本机 Codex 会话和 Git 活动，再按真实工作主线归并，不按会话数量逐条罗列。"
+
+policy:
+  allow_implicit_invocation: true
