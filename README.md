@@ -1,98 +1,73 @@
-# Codex Daily Report
+# Codex Daily Report Skill
 
-从本机 Codex 会话记录、目标工作区 Git 活动和可选 token 统计里提取当天工作素材，生成一份中文 Markdown 日报草稿。
+这是一个可直接复制安装的 Codex skill，用来根据本机 Codex 会话记录、目标工作区 Git 活动和可选 token 统计整理中文日报或周报。
 
-这个项目是一个通用开源版本，只保留本地解析和写作骨架，不包含任何公司内部流程、需求系统、数据库口径、真实工单编号或固定个人路径。
+这个仓库只保留 skill 本体和示例文件，不需要 Python 安装，不需要构建，也不绑定任何公司内部系统。
 
-## 能做什么
+## 目录结构
 
-- 扫描 `~/.codex/state_5.sqlite` 和 `~/.codex/sessions/**/{date}/*.jsonl`
-- 按工作区过滤当天相关 Codex 会话
-- 识别跨天继续推进的会话
-- 清理 `AGENTS.md instructions`、环境上下文、重复 `response_item` 等噪音
-- 汇总目标工作区及子目录 Git 仓库当天提交、状态和 diff 概览
-- 可选接入你自己的 token 统计命令
-- 输出一份适合继续交给 Codex 或人工改写的中文 Markdown 草稿
-- 附带一个脱敏版 Codex skill，可直接作为个人 skill 的起点
+```text
+codex-daily-report/
+  SKILL.md
+  references/commands.md
+  agents/openai.yaml
+examples/
+  daily.example.md
+README.md
+LICENSE
+```
+
+文件说明：
+
+- `codex-daily-report/SKILL.md`：核心 skill 说明，包含完整日报/周报生成规则、筛选规则、写作规则和自检清单。
+- `codex-daily-report/references/commands.md`：查询本机 Codex 会话、JSONL、Git 活动和 token 统计的参考命令。
+- `codex-daily-report/agents/openai.yaml`：Codex 插件界面展示和默认提示词。
+- `examples/daily.example.md`：脱敏日报示例。
 
 ## 安装
 
-```sh
-python3 -m pip install .
-```
-
-开发模式：
+把整个 `codex-daily-report/` 目录复制到你的 Codex skills 目录即可：
 
 ```sh
-python3 -m pip install -e .
+cp -R codex-daily-report ~/.codex/skills/
 ```
 
-## 使用
-
-在目标工作区执行：
-
-```sh
-codex-daily-report --date 2026-06-18 --workspace . --hours 8 --output daily/2026-06-18.md
-```
-
-如果不传日期，默认使用当前本地日期：
-
-```sh
-codex-daily-report --workspace .
-```
-
-指定时区：
-
-```sh
-codex-daily-report --timezone Asia/Shanghai --workspace .
-```
-
-接入自定义 token 统计脚本：
-
-```sh
-codex-daily-report \
-  --date 2026-06-18 \
-  --workspace . \
-  --token-command "python3 scripts/token_report.py --day 2026-06-18"
-```
-
-## 输出定位
-
-CLI 默认输出的是“日报素材草稿”，不是假装已经完全理解业务语境的最终日报。它会把候选会话、Git 活动和写作提示组织好，让你或 Codex 基于真实素材再压缩成管理者可读的工作日报。
-
-推荐流程：
-
-1. 先用 CLI 生成素材草稿。
-2. 人工或 Codex 检查候选会话是否有漏项。
-3. 把草稿压缩成正式日报，保留业务目标、关键动作和当前结果。
-
-## 隐私说明
-
-这个工具默认只在本机读取文件，不会联网，也不会把会话内容上传到任何服务。生成的 Markdown 可能包含你的会话片段、提交信息、分支名或文件名，公开分享前请自行复核和脱敏。
-
-## Codex skill
-
-脱敏版 skill 放在：
+安装后可以在 Codex 里这样使用：
 
 ```text
-skills/codex-daily-report/
+使用 $codex-daily-report 生成今天的日报
 ```
 
-你可以把这个目录复制到自己的 Codex skills 目录，再按个人工作流修改写作口径。公开版本里没有绑定任何特定公司或需求系统。
+或指定日期、工作区和工时：
 
-## 开发
-
-运行测试：
-
-```sh
-python3 -m unittest discover -s tests
+```text
+使用 $codex-daily-report 生成 2026-06-18 的日报，工作区是 /path/to/workspace，总工时 8h
 ```
 
-运行一次本地草稿生成：
+## 它会做什么
 
-```sh
-python3 -m codex_daily_report.cli --workspace . --date 2026-06-18
-```
+- 默认读取 `~/.codex/state_5.sqlite` 和 `~/.codex/sessions/.../*.jsonl`。
+- 按目标工作区筛选当天相关会话。
+- 处理跨天继续推进的旧会话。
+- 过滤 `AGENTS.md instructions`、环境上下文、重复消息和日报生成线程。
+- 结合 Git 当天提交、未提交改动和文件变动校正工作主线。
+- 可选读取 token 统计结果，写入“今日 AI 协作量”。
+- 按真实工作主线生成中文日报或周报。
+
+## 脱敏说明
+
+这个公开版本来自一个真实个人工作流，但已经做了通用化处理：
+
+- 删除了公司名、内部系统名、真实需求编号、真实业务案例和固定个人路径。
+- 把私有需求系统改写为通用的 Issue/Bug tracker。
+- 把专属进度口径改写成可选的通用校正规则。
+- 保留了原始工作流里更重要的部分：跨天会话扫描、Git 校正、消息去噪、主线归并、工时拆分和成稿自检。
+
+如果你有自己的公司流程，建议在本地复制一份私有规则，不要直接提交到公开仓库。
+
+## 隐私提醒
+
+这个 skill 的参考命令只读取本机文件，不会主动联网。生成日报时仍可能引用你的会话片段、提交信息、分支名、文件路径或内部编号，公开分享前请自行复核和脱敏。
 
 ## 许可证
 

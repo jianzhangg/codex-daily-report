@@ -1,0 +1,7 @@
+interface:
+  display_name: "Codex 日报周报生成"
+  short_description: "根据本机 Codex 会话、Git 活动和 token 统计整理中文日报或周报"
+  default_prompt: "使用 $codex-daily-report 生成当前工作区的中文日报或周报。生成日报时，如果用户没有指定日期，默认使用当前本地日期；总工时默认 8h，除非用户另行指定。请先扫描本机 Codex 会话、跨天 JSONL 和 Git 活动，再按真实工作主线归并，不要按线程流水账罗列。生成周报时优先读取本周已有日报，按主线合并，不机械拼接每天内容。"
+
+policy:
+  allow_implicit_invocation: true
